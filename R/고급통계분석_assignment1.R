@@ -46,3 +46,31 @@ print(x)
 bubble_sort(x)
 bubble_sort(x, decreasing=TRUE)
 
+##Problem 2-(b)----
+quick_sort=function(vec, decreasing=FALSE){
+  n=length(vec)
+  if (n<2)
+    return(vec)
+  
+  pivot=vec[1]
+  rest=vec[-1]
+  
+  if (decreasing) {
+    left=rest[rest>pivot]
+    right=rest[rest<=pivot]
+  }
+  else {
+    left=rest[rest<pivot]
+    right=rest[rest>=pivot]
+  }
+  return(c(quick_sort(left, decreasing),
+           pivot,
+           quick_sort(right, decreasing)))
+}
+
+set.seed(1)
+x=runif(10)
+print(x)
+
+quick_sort(x) #오름차순(ASC)
+quick_sort(x, decreasing=TRUE) #DESC
