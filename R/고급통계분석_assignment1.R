@@ -10,3 +10,39 @@ head(sim_data)
 
 write.csv(sim_data, "data/sim_data.csv", row.names=FALSE)
 file.exists("data/sim_data.csv")
+
+#Problem 2-----------------------------
+##Problem 2-(a)----
+bubble_sort=function(vec, decreasing=FALSE){
+  n=length(vec)
+  if (n<2)
+    return(vec)
+  
+  for (i in 1:(n-1)){
+    swapped=FALSE
+    for (j in 1:(n-i)){
+      if (decreasing) {
+        need_swap=vec[j] < vec[j+1]
+      } else {
+        need_swap=vec[j] > vec[j+1]
+      }
+      if (need_swap){
+        temp=vec[j]
+        vec[j]=vec[j+1]
+        vec[j+1]=temp
+        swapped=TRUE
+      }
+    }
+    if (!swapped)
+      break
+  }
+  return(vec)
+}
+
+set.seed(1)
+x=runif(10)
+print(x)
+
+bubble_sort(x)
+bubble_sort(x, decreasing=TRUE)
+
