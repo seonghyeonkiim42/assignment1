@@ -170,7 +170,7 @@ left_rectangle=function(f, a, b, n){
 trapezoid=function(f, a, b, n){
   h=(b-a)/n
   fx=f(a+(0:n)*h)
-  return(h/2*(fx[1]+2*sum(fx[2:n]+fx[n+1])))
+  return(h/2*(fx[1]+2*sum(fx[2:n])+fx[n+1]))
 }
 
 ##Problem 4-(c)----
@@ -202,7 +202,7 @@ true_val=2
 
 err_left=sapply(n_vec, function(n) abs(left_rectangle(sin, 0, pi, n)-true_val))
 err_trap=sapply(n_vec, function(n) abs(trapezoid(sin, 0, pi, n)-true_val))
-err_simp=sapply(n_vec, function(n) abs(simpson(sin, 0, pi, n))-true_val)
+err_simp=sapply(n_vec, function(n) abs(simpson(sin, 0, pi, n)-true_val))
 
 err_table=data.frame(n=n_vec, left=err_left, trap=err_trap, simpson=err_simp)
 print(err_table, digits=5)
@@ -262,7 +262,7 @@ backward=function(L, z){
   
   for(i in n:1){
     if (i < n)
-      sum_lx=sum(L[(i+1):n, 1]*x[(i+1):n])
+      sum_lx=sum(L[(i+1):n, i]*x[(i+1):n])
     else
       sum_lx=0
     x[i]=(z[i]-sum_lx)/L[i, i]
