@@ -74,3 +74,43 @@ print(x)
 
 quick_sort(x) #오름차순(ASC)
 quick_sort(x, decreasing=TRUE) #DESC
+
+#Problem 3-----------------------------
+#Problem 3-(a)
+library(ggplot2)
+
+num_deriv=function(f, x, h=1e-6, method="central"){
+  if (method=="forward") {
+    d=(f(x+h)-f(x)) / h
+  }
+  else if (method == "backward"){
+    d=(f(x)-f(x-h))/h
+  }
+  else if (method =="central") {
+    d=(f(x)-f(x-h))/(2*h)
+  }
+  else {
+    stop("method는 forward, backward, central 중 하나여야 한다.")
+  }
+  return(d)
+}
+
+f=function(x) cos(x)-x
+f_prime=function(x) - sin(x) -1
+
+x_grid=seq(0, 2*pi, length.out=100)
+
+d_true=f_prime(x_grid)
+d_forward=num_deriv(f, x_grid, method="forward")
+d_backward=num_deriv(f, x_grid, method="backward")
+d_central=num_deriv(f, x_grid, method="central")
+
+deriv_df=data.frame(
+  x=rep(x_grid, 4),
+  value=c(d_true, d_forward, d_backward, d_central),
+  method=rep(c("analytic", "forward", "backward", "central"), each=100)
+)
+
+ggplot(deriv_df, aes(x=x, y=value, color=method)) +
+  geom_line() + labs(title="Numerical vs. analytic derivative of f(x)=cos(x)-x",
+                     x="x", y="f'(x)") + theme_minimal()
