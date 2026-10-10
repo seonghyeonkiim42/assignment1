@@ -345,3 +345,7 @@ fit = krr(X, y)
 plot(fit)
 fit10 = krr(X, y, rho = 10)
 plot(fit10)
+
+x_new = c(-0.5, 0, 0.5)
+predict(fit, x_new)
+ftrue(x_new)
