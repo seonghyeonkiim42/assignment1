@@ -76,7 +76,7 @@ quick_sort(x) #오름차순(ASC)
 quick_sort(x, decreasing=TRUE) #DESC
 
 #Problem 3-----------------------------
-#Problem 3-(a)
+##Problem 3-(a)
 library(ggplot2)
 
 num_deriv=function(f, x, h=1e-6, method="central"){
@@ -166,14 +166,14 @@ left_rectangle=function(f, a, b, n){
   return(h*sum(f(x)))
 }
 
-##Probelm 4-(b)
+##Probelm 4-(b)----
 trapezoid=function(f, a, b, n){
   h=(b-a)/n
   fx=f(a+(0:n)*h)
   return(h/2*(fx[1]+2*sum(fx[2:n]+fx[n+1])))
 }
 
-##Problem 4-(c)
+##Problem 4-(c)----
 simpson=function(f, a, b, n){
   if (n %%2 !=0)
     stop("Simpson method은 n이 짝수이어야 함")
@@ -188,7 +188,7 @@ simpson=function(f, a, b, n){
   return(h/3*(fx[1]+4*sum(fx[odd_i+1])+2*sum(fx[even_i+1])+fx[n+1]))
 }
 
-##Problem 4-(d)
+##Problem 4-(d)----
 n=100
 res_left=left_rectangle(sin, 0, pi, n)
 res_trap=trapezoid(sin, 0, pi, n)
@@ -196,7 +196,7 @@ res_simp=simpson(sin, 0, pi, n)
 
 print(c(lef=res_left, trap=res_trap, simpson=res_simp), digits=15)
 
-##Problem 4-(e)
+##Problem 4-(e)----
 n_vec=c(10,30,60, 100, 150, 200)
 true_val=2
 
@@ -221,3 +221,69 @@ ggplot(err_df, aes(x=n, y=error, color=method, linetype = method)) +
   labs(title = "Absolute error of numerical integration of sin(x) on [0, pi]",
        x = "n (log scale)", y = "|approx - 2| (log scale)") +
   theme_minimal()
+
+#Problem 5-----------------------------
+##Problem 5-(a)
+A=matrix(c(4,2,2,2,5,1,2,1,3), 3)
+A
+
+U=chol(A)
+L=t(U)
+L
+
+L%*% t(L)
+all.equal(L %*% t(L), A)
+
+##Probelm 5-(b)
+forward=function(L, b){
+  n=nrow(L)
+  z=numeric(n)
+  
+  for (i in 1:n){
+    if (i>1)
+      sum_lz=sum(L[i, 1:(i-1)]*z[1:(i-1)])
+    else
+      sum_lz=0
+    z[i]=(b[i]-sum_lz)/L[i,i]
+  }
+  return(z)
+}
+
+b=c(1,-2, 3)
+z=forward(L, b)
+z
+forwardsolve(L, b)
+all.equal(z, forwardsolve(L, b))
+
+##Problem 5-(c)
+backward=function(L, z){
+  n=nrow(L)
+  x=numeric(n)
+  
+  for(i in n:1){
+    if (i < n)
+      sum_lx=sum(L[(i+1):n, 1]*x[(i+1):n])
+    else
+      sum_lx=0
+    x[i]=(z[i]-sum_lx)/L[i, i]
+  }
+  return(x)
+}
+
+x=backward(L,z)
+x
+backsolve(t(L), z)
+all.equal(x, backsolve(t(L), z))
+
+##Problem 5-(d)
+b=c(1,-2, 3)
+
+z=forward(L,b)
+x=backward(L, z)
+x
+
+solve(A,b)
+all.equal(x, solve(A, b))
+
+A %*% x
+
