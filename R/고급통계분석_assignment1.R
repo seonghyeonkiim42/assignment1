@@ -223,7 +223,7 @@ ggplot(err_df, aes(x=n, y=error, color=method, linetype = method)) +
   theme_minimal()
 
 #Problem 5-----------------------------
-##Problem 5-(a)
+##Problem 5-(a)----
 A=matrix(c(4,2,2,2,5,1,2,1,3), 3)
 A
 
@@ -234,7 +234,7 @@ L
 L%*% t(L)
 all.equal(L %*% t(L), A)
 
-##Probelm 5-(b)
+##Probelm 5-(b)----
 forward=function(L, b){
   n=nrow(L)
   z=numeric(n)
@@ -255,7 +255,7 @@ z
 forwardsolve(L, b)
 all.equal(z, forwardsolve(L, b))
 
-##Problem 5-(c)
+##Problem 5-(c)----
 backward=function(L, z){
   n=nrow(L)
   x=numeric(n)
@@ -275,7 +275,7 @@ x
 backsolve(t(L), z)
 all.equal(x, backsolve(t(L), z))
 
-##Problem 5-(d)
+##Problem 5-(d)----
 b=c(1,-2, 3)
 
 z=forward(L,b)
@@ -287,3 +287,61 @@ all.equal(x, solve(A, b))
 
 A %*% x
 
+#Problem 6-----------------------------
+##Problem 6-(a)----
+gaussian_kernel=function(x1, x2, rho=1){
+  diff=outer(x1, x2, "-")
+  return(exp(-rho*diff^2))
+}
+
+gaussian_kernel(c(0, 0.5), c(0, 0.5, 1))
+
+##Problem 6-(b)----
+krr=function(X, y, rho=1, lambda=1e-4){
+  x=as.vector(X)
+  n=length(x)
+  K=gaussian_kernel(x,x, rho)
+  alpha=solve(K+lambda*diag(n), y)
+  
+  obj=list(alpha=alpha, x=x, y=y, rho=rho, lambda=lambda)
+  class(obj)="krr"
+  return(obj)
+}
+
+##Problem 6-(c)----
+predict.krr = function(object, newdata, ...)
+{
+  K_new = gaussian_kernel(as.vector(newdata), object$x, object$rho)
+  return(as.vector(K_new %*% object$alpha))
+}
+
+##Problem 6-(d)----
+plot.krr = function(x, ...){
+  obj = x
+  x_grid = seq(min(obj$x), max(obj$x), length.out = 300)
+  y_hat = predict(obj, x_grid)
+  
+  data_df = data.frame(x = obj$x, y = obj$y)
+  fit_df  = data.frame(x = x_grid, y = y_hat)
+  
+  p = ggplot() +
+    geom_point(data = data_df, aes(x = x, y = y), color = "grey") +
+    geom_line(data = fit_df, aes(x = x, y = y), color = "blue", linewidth = 1) +
+    labs(title = paste0("KRR fit (rho = ", obj$rho, ", lambda = ", obj$lambda, ")"),
+         x = "x", y = "y") +
+    theme_minimal()
+  print(p)
+  invisible(p)
+}
+
+##Problem 6-(e)
+set.seed(1)
+n = 150
+X = matrix(runif(n, -1, 1), ncol = 1)
+ftrue = function(x) sin(2*pi*x) + 0.5*cos(4*pi*x)
+y = ftrue(X[,1]) + rnorm(n, sd = 0.1)
+
+fit = krr(X, y)
+plot(fit)
+fit10 = krr(X, y, rho = 10)
+plot(fit10)
